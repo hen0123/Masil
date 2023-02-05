@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <div class="container my-3">
+        <h2 class="border-bottom py-2"> {{ question.subject }} </h2>
+        <div class="card my-3">
+            <div class="card-body">
+                <!-- pre-line : 줄바꿈 -->
+                <div class="card-text" style="white-space: pre-line;">
+                    {{ question.content }}
+                </div>
+                <!-- 작성일시는 오른쪽에 배치 -->
+                <div class="d-flex justify-content-end">
+                    <!-- 작성일시 배경색 -->
+                    <div class="badge badge-secondary p-2">
+                        {{ question.create_date }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h5 class="border-bottom my-3 py-2">
+            {{ question.answer_set.count }}개의 답변이 있습니다.
+        </h5>
+        {% for answer in question.answer_set.all %}
+            <div class="card my-3">
+                <div class="card-body">
+                    <div class="card-text" style="white-space: pre-line;">
+                        {{ answer.content }}
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <!-- p: padding 상하좌우, badge-light/dark/secondary : 작성일시 배경  -->
+                        <!-- badge: 기본클래스, badge-secondart: 개별클래스 -->
+                        <div class="badge badge-secondary p-2">
+                            {{ answer.create_date }}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        {%endfor%}
+
+        <form action="{% url 'pybo:answer_create' question.id %}" method="post" class="my-3">
+            {% csrf_token %}
+            <!-- 오류표시 start -->
+            {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+                {% for field in form %}
+                {% if field.errors %}
+                <div>
+                    <strong>{{ field.label }}</strong>
+                    {{ field.errors }}
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+            <!-- 오류표시 end -->
+            <div class="form-group">
+                <textarea name="content" id="content" rows="10" style="width:100%"></textarea>
+            </div>
+            <br>
+            <input type="submit" value="답변 등록" class="btn btn-primary">
+        </form>
+    </div>
+
+{% endblock %}
